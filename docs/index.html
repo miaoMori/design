@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宿舍管理系统 Demo 入口</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --primary: #0089ff;
+      --primary-dark: #0077df;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .wrap {
+      width: 100%;
+      max-width: 560px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+      padding: 28px 22px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+    p {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .links {
+      display: grid;
+      gap: 12px;
+    }
+    .entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px 14px;
+      color: var(--text);
+      transition: all 0.15s ease;
+    }
+    .entry:hover {
+      border-color: #bcdfff;
+      box-shadow: 0 6px 16px rgba(0, 137, 255, 0.12);
+      transform: translateY(-1px);
+    }
+    .entry-main {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .entry-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .entry-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .arrow {
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .primary {
+      border-color: #bcdfff;
+      background: #f3f9ff;
+    }
+    .footer {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .footer code {
+      color: var(--primary-dark);
+      background: #eef6ff;
+      padding: 1px 6px;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>宿舍管理系统 Demo</h1>
+    <p>请选择要进入的端：管理员端或员工端。</p>
+
+    <div class="links">
+      <a class="entry primary" href="./admin-demo.html">
+        <span class="entry-main">
+          <span class="entry-title">管理员端</span>
+          <span class="entry-sub">进入后台管理、审批与台账模块</span>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+
+      <a class="entry" href="./mobile-demo.html">
+        <span class="entry-main">
+          <span class="entry-title">员工端（H5）</span>
+          <span class="entry-sub">进入宿舍申请、详情与记录页面</span>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <div class="footer">入口文件：<code>design/index.html</code></div>
+  </main>
+</body>
+</html>

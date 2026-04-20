@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>钉钉宿舍管理系统 · 管理员端</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0089FF;
+  --primary-hover: #006FD6;
+  --primary-light: #EFF6FF;
+  --success: #16A34A;
+  --success-light: #F0FDF4;
+  --warning: #D97706;
+  --warning-light: #FFFBEB;
+  --danger: #DC2626;
+  --danger-light: #FEF2F2;
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-600: #4B5563;
+  --gray-700: #374151;
+  --gray-800: #1F2937;
+  --gray-900: #111827;
+  --header-h: 56px;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, "PingFang SC", sans-serif; background: var(--gray-50); color: var(--gray-800); font-size: 14px; line-height: 1.5; }
+
+/* ─── Header ─── */
+.app-header {
+  background: var(--primary);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.header-brand-icon {
+  width: 28px; height: 28px;
+  background: rgba(255,255,255,.2);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+}
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  overflow-x: auto;
+}
+.header-nav::-webkit-scrollbar { display: none; }
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,.8);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+  border: none;
+  background: none;
+}
+.nav-link:hover { background: rgba(255,255,255,.15); color: #fff; }
+.nav-link.active { background: rgba(255,255,255,.22); color: #fff; font-weight: 600; }
+.nav-badge {
+  background: #DC2626;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 8px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 1.4;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+/* Hamburger (mobile) */
+.hamburger-btn {
+  display: none;
+  width: 34px; height: 34px;
+  background: rgba(255,255,255,.15);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #fff;
+  align-items: center; justify-content: center;
+}
+
+/* Mobile nav overlay */
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: var(--header-h) 0 0 0;
+  background: rgba(0,0,0,.4);
+  z-index: 40;
+}
+.mobile-nav-panel {
+  background: #fff;
+  width: 280px;
+  max-width: 80vw;
+  height: 100%;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 20px;
+  font-size: 14px;
+  color: var(--gray-700);
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all .15s;
+}
+.mobile-nav-link:hover { background: var(--gray-50); color: var(--primary); }
+.mobile-nav-link.active { color: var(--primary); font-weight: 600; border-left-color: var(--primary); background: var(--primary-light); }
+.mobile-nav-link .nav-badge { background: var(--danger); }
+.mobile-nav-sep { height: 1px; background: var(--gray-100); margin: 6px 0; }
+
+/* ─── Main ─── */
+.app-main {
+  min-height: calc(100vh - var(--header-h));
+  padding-bottom: 64px; /* mobile bottom nav */
+}
+@media (min-width: 768px) {
+  .app-main { padding-bottom: 0; }
+}
+.content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+@media (min-width: 768px) {
+  .content { padding: 24px; }
+}
+
+/* ─── Page title bar ─── */
+.page-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.page-title-bar h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+/* ─── Pages ─── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ─── Stats Grid ─── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+@media (min-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+}
+.stat-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow);
+}
+@media (min-width: 768px) {
+  .stat-card { padding: 20px; }
+}
+.stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.stat-card-label { font-size: 12px; color: var(--gray-500); font-weight: 500; }
+@media (min-width: 768px) {
+  .stat-card-label { font-size: 13px; }
+}
+.stat-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+@media (min-width: 768px) {
+  .stat-icon { width: 36px; height: 36px; font-size: 16px; }
+}
+.stat-icon.blue { background: #DBEAFE; }
+.stat-icon.green { background: #DCFCE7; }
+.stat-icon.orange { background: #FEF3C7; }
+.stat-icon.red { background: #FEE2E2; }
+.stat-value { font-size: 24px; font-weight: 700; color: var(--gray-900); line-height: 1; }
+@media (min-width: 768px) {
+  .stat-value { font-size: 28px; }
+}
+.stat-sub { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+.stat-trend { font-size: 12px; color: var(--success); font-weight: 500; }
+.stat-trend.down { color: var(--danger); }
+
+/* ─── Section Card ─── */
+.card { background: #fff; border-radius: var(--radius); border: 1px solid var(--gray-200); box-shadow: var(--shadow); margin-bottom: 16px; }
+@media (min-width: 768px) { .card { margin-bottom: 20px; } }
+.card-header { padding: 14px 16px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+@media (min-width: 768px) { .card-header { padding: 16px 20px; } }
+.card-title { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.card-subtitle { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.card-body { padding: 16px; }
+@media (min-width: 768px) { .card-body { padding: 20px; } }
+.card-body.p0 { padding: 0; }
+
+/* ─── Responsive grids ─── */
+.two-col { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 768px) { .two-col { grid-template-columns: 1fr 1fr; gap: 20px; } }
+.three-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (min-width: 768px) { .three-col { grid-template-columns: 1fr 1fr 1fr; gap: 20px; } }
+
+/* ─── Table ─── */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th { background: var(--gray-50); padding: 10px 12px; text-align: left; font-weight: 600; color: var(--gray-600); border-bottom: 1px solid var(--gray-200); white-space: nowrap; font-size: 12px; }
+@media (min-width: 768px) { thead th { padding: 10px 16px; } }
+tbody td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); color: var(--gray-700); vertical-align: middle; }
+@media (min-width: 768px) { tbody td { padding: 12px 16px; } }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--gray-50); }
+
+/* ─── Badges ─── */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.badge-available { background: #DCFCE7; color: #166534; }
+.badge-occupied { background: #DBEAFE; color: #1E40AF; }
+.badge-disabled { background: var(--gray-100); color: var(--gray-500); }
+.badge-enabled { background: #DCFCE7; color: #166534; }
+.badge-pending { background: #FEF3C7; color: #92400E; }
+.badge-done { background: #DCFCE7; color: #166534; }
+.badge-rejected { background: #FEE2E2; color: #991B1B; }
+.badge-admin { background: #EDE9FE; color: #5B21B6; }
+.badge-superadmin { background: #FDF2F8; color: #9D174D; }
+.badge-warn { background: #FEF3C7; color: #92400E; }
+
+/* ─── Buttons ─── */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; transition: all .15s; white-space: nowrap; }
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: #fff; color: var(--gray-700); border-color: var(--gray-300); }
+.btn-secondary:hover { background: var(--gray-50); }
+.btn-danger { background: #fff; color: var(--danger); border-color: var(--danger); }
+.btn-danger:hover { background: var(--danger-light); }
+.btn-success { background: var(--success); color: #fff; border-color: var(--success); }
+.btn-success:hover { background: #15803D; }
+.btn-warning { background: #fff; color: var(--warning); border-color: var(--warning); }
+.btn-warning:hover { background: var(--warning-light); }
+.btn-ghost { background: none; color: var(--primary); border: none; padding: 4px 0; font-size: 13px; cursor: pointer; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-icon { padding: 6px 8px; }
+.btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ─── Toolbar ─── */
+.toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.search-input-wrap { position: relative; flex: 1; min-width: 160px; }
+.search-input-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--gray-400); width: 14px; }
+.search-input { border: 1px solid var(--gray-300); border-radius: 6px; padding: 7px 10px 7px 32px; font-size: 13px; background: #fff; color: var(--gray-800); outline: none; width: 100%; }
+.search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,137,255,.1); }
+.select-filter { border: 1px solid var(--gray-300); border-radius: 6px; padding: 7px 10px; font-size: 13px; background: #fff; color: var(--gray-700); outline: none; cursor: pointer; }
+.select-filter:focus { border-color: var(--primary); }
+.toolbar-right { margin-left: auto; }
+
+/* ─── Tabs ─── */
+.tabs { display: flex; border-bottom: 1px solid var(--gray-200); margin-bottom: 16px; overflow-x: auto; }
+.tab { padding: 10px 14px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--gray-500); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s; white-space: nowrap; }
+.tab:hover { color: var(--gray-700); }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-count { background: var(--gray-100); color: var(--gray-500); font-size: 11px; padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
+.tab.active .tab-count { background: #DBEAFE; color: var(--primary); }
+
+/* ─── Form ─── */
+.form-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+.form-grid.cols3 { grid-template-columns: 1fr; }
+@media (min-width: 600px) { .form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; } }
+.form-grid.cols1 { grid-template-columns: 1fr !important; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--gray-600); }
+.form-label.req::after { content: ' *'; color: #DC2626; font-weight: 700; }
+.form-input, .form-select, .form-textarea {
+  border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 12px;
+  font-size: 13px; color: var(--gray-800); background: #fff; outline: none; font-family: inherit;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,137,255,.1); }
+.form-input.readonly { background: #fff; color: var(--gray-500); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-hint { font-size: 11px; color: var(--gray-400); }
+.form-actions { display: flex; gap: 10px; padding-top: 8px; flex-wrap: wrap; }
+.form-divider { grid-column: 1 / -1; border: none; border-top: 1px solid var(--gray-100); margin: 4px 0; }
+.form-section-title { grid-column: 1 / -1; font-size: 13px; font-weight: 600; color: var(--gray-700); padding-top: 8px; border-top: 1px solid var(--gray-100); margin-top: 4px; }
+
+/* ─── Detail ─── */
+.detail-panel { background: var(--gray-50); border-radius: 8px; padding: 14px; border: 1px solid var(--gray-200); }
+.detail-row { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+.detail-row:last-child { margin-bottom: 0; }
+.detail-key { color: var(--gray-500); width: 80px; flex-shrink: 0; }
+@media (min-width: 480px) { .detail-key { width: 90px; } }
+.detail-val { color: var(--gray-800); font-weight: 500; flex: 1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.detail-masked { letter-spacing: 2px; color: var(--gray-400); }
+.eye-btn { cursor: pointer; color: var(--primary); font-size: 12px; padding: 1px 6px; border: 1px solid var(--primary); border-radius: 4px; white-space: nowrap; }
+
+/* ─── Alert ─── */
+.alert { border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.6; }
+.alert-warning { background: var(--warning-light); border: 1px solid #FDE68A; color: #92400E; }
+.alert-info { background: var(--primary-light); border: 1px solid #BFDBFE; color: #1E40AF; }
+.alert-danger { background: var(--danger-light); border: 1px solid #FECACA; color: #991B1B; }
+
+/* ─── Progress Bar ─── */
+.progress-bar { height: 6px; background: var(--gray-200); border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--primary); border-radius: 10px; transition: width .3s; }
+.progress-fill.green { background: var(--success); }
+.progress-fill.orange { background: var(--warning); }
+
+/* ─── Breadcrumb ─── */
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray-400); margin-bottom: 16px; flex-wrap: wrap; }
+.breadcrumb a { color: var(--primary); cursor: pointer; }
+.breadcrumb-sep { color: var(--gray-300); }
+
+/* ─── Empty ─── */
+.empty { text-align: center; padding: 48px; color: var(--gray-400); }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-text { font-size: 14px; }
+
+/* ─── Room Grid ─── */
+.room-selector { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 8px; }
+.room-cell { border: 2px solid var(--gray-200); border-radius: 8px; padding: 10px 6px; text-align: center; cursor: pointer; transition: all .15s; }
+.room-cell.available { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.room-cell.available:hover { background: #DBEAFE; }
+.room-cell.selected { border-color: var(--primary); background: var(--primary); color: #fff; }
+.room-cell.occupied { background: var(--gray-50); color: var(--gray-400); cursor: not-allowed; border-color: var(--gray-200); }
+.room-cell.room-disabled { background: var(--gray-100); color: var(--gray-400); cursor: not-allowed; border-color: var(--gray-200); }
+.room-num { font-size: 13px; font-weight: 700; }
+.room-status-label { font-size: 10px; margin-top: 3px; }
+
+/* ─── Pagination ─── */
+.pagination { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-top: 1px solid var(--gray-100); flex-wrap: wrap; gap: 8px; }
+@media (min-width: 768px) { .pagination { padding: 12px 16px; } }
+.pagination-info { font-size: 12px; color: var(--gray-500); }
+.pagination-btns { display: flex; gap: 4px; }
+.page-btn { width: 30px; height: 30px; border: 1px solid var(--gray-200); border-radius: 6px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; color: var(--gray-600); transition: all .15s; }
+.page-btn:hover { border-color: var(--primary); color: var(--primary); }
+.page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* ─── List item ─── */
+.list-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--gray-100); gap: 12px; flex-wrap: wrap; }
+.list-item:last-child { border-bottom: none; }
+.list-item-left { display: flex; align-items: center; gap: 12px; }
+.list-item-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; }
+
+/* ─── Comment ─── */
+.comment-box { background: var(--gray-50); border-radius: 8px; padding: 12px; border: 1px solid var(--gray-200); margin-top: 12px; }
+.comment-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 12px; flex-wrap: wrap; gap: 4px; }
+.comment-author { font-weight: 600; color: var(--gray-700); }
+.comment-time { color: var(--gray-400); }
+.comment-text { font-size: 13px; color: var(--gray-700); }
+.comment-input-wrap { margin-top: 12px; display: flex; gap: 8px; }
+
+/* ─── Modal ─── */
+.modal-mask {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  z-index: 1000; align-items: center; justify-content: center; padding: 16px;
+}
+.modal-mask.open { display: flex; }
+.modal {
+  background: #fff; border-radius: 12px; width: 480px; max-width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden;
+  max-height: calc(100vh - 32px); display: flex; flex-direction: column;
+}
+.modal.modal-lg { width: 640px; }
+.modal-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--gray-100);
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.modal-title { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+.modal-close { width: 28px; height: 28px; border-radius: 6px; border: none; background: var(--gray-100); cursor: pointer; font-size: 16px; color: var(--gray-500); display: flex; align-items: center; justify-content: center; transition: background .15s; }
+.modal-close:hover { background: var(--gray-200); }
+.modal-body { padding: 20px; overflow-y: auto; }
+.modal-footer { padding: 12px 20px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--gray-100); flex-shrink: 0; }
+.modal-info-panel { background: var(--gray-50); border-radius: 8px; padding: 12px 14px; border: 1px solid var(--gray-200); margin-bottom: 16px; }
+.modal-info-row { display: flex; gap: 8px; font-size: 13px; margin-bottom: 6px; }
+.modal-info-row:last-child { margin-bottom: 0; }
+.modal-info-key { color: var(--gray-400); width: 72px; flex-shrink: 0; }
+.modal-info-val { color: var(--gray-800); font-weight: 500; }
+
+/* ─── Person picker ─── */
+.person-picker { border: 1px solid var(--gray-300); border-radius: 6px; padding: 8px 12px; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; background: #fff; transition: border .15s; }
+.person-picker:hover { border-color: var(--primary); }
+.person-tag { background: var(--primary-light); color: var(--primary); border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+.person-tag-del { cursor: pointer; color: var(--primary); font-size: 14px; line-height: 1; }
+.person-placeholder { color: var(--gray-400); }
+
+/* ─── Mobile bottom nav ─── */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #fff;
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  z-index: 40;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.m-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px 10px;
+  font-size: 10px;
+  color: var(--gray-500);
+  cursor: pointer;
+  position: relative;
+  transition: color .15s;
+}
+.m-nav-item.active { color: var(--primary); }
+.m-nav-icon { font-size: 19px; line-height: 1; }
+.m-nav-badge {
+  position: absolute;
+  top: 4px; right: calc(50% - 14px);
+  background: var(--danger);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 6px;
+  min-width: 14px;
+  text-align: center;
+}
+
+/* ─── More menu overlay ─── */
+.more-menu-mask {
+  display: none;
+  position: fixed; inset: 0;
+  z-index: 45;
+}
+.more-menu-mask.open { display: block; }
+.more-menu-panel {
+  position: fixed;
+  bottom: 60px; left: 0; right: 0;
+  background: #fff;
+  border-top: 1px solid var(--gray-200);
+  border-radius: 16px 16px 0 0;
+  padding: 16px 0 8px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.1);
+  z-index: 46;
+}
+.more-menu-title { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 20px 8px; }
+.more-menu-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px;
+  font-size: 14px;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: background .15s;
+}
+.more-menu-item:hover { background: var(--gray-50); }
+.more-menu-item.active { color: var(--primary); font-weight: 600; }
+
+svg { display: inline-block; vertical-align: middle; }
+
+/* ─── Responsive hide/show ─── */
+@media (min-width: 768px) {
+  .mobile-bottom-nav { display: none; }
+  .hamburger-btn { display: none !important; }
+  .mobile-nav-overlay { display: none !important; }
+}
+@media (max-width: 767px) {
+  .header-nav { display: none; }
+  .hamburger-btn { display: flex; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ HEADER ════════ -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="header-brand-icon">🏠</div>
+      <span>宿舍管理系统</span>
+    </div>
+
+    <!-- PC nav -->
+    <nav class="header-nav" id="header-nav">
+      <button class="nav-link active" onclick="nav('dashboard')">概览</button>
+      <button class="nav-link" onclick="nav('checkin-apply')">申请列表</button>
+      <button class="nav-link" onclick="nav('regions')">区域管理</button>
+      <button class="nav-link" onclick="nav('dormitories')">宿舍管理</button>
+      <button class="nav-link" onclick="nav('admins')">权限管理</button>
+    </nav>
+
+    <div class="header-right">
+      <!-- Hamburger (mobile) -->
+      <button class="hamburger-btn" id="hamburger-btn" onclick="toggleMobileNav()" aria-label="菜单">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile nav overlay -->
+<div class="mobile-nav-overlay" id="mobile-nav-overlay" onclick="closeMobileNav()">
+  <nav class="mobile-nav-panel" onclick="event.stopPropagation()">
+    <div style="padding:12px 20px 8px;font-size:12px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;">菜单</div>
+    <div class="mobile-nav-link active" id="mnav-dashboard" onclick="nav('dashboard');closeMobileNav()">
+      <span>📊</span> 数据概览
+    </div>
+    <div class="mobile-nav-sep"></div>
+    <div style="padding:6px 20px 2px;font-size:11px;font-weight:600;color:var(--gray-400);">申请管理</div>
+    <div class="mobile-nav-link" id="mnav-checkin-apply" onclick="nav('checkin-apply');closeMobileNav()">
+      <span>📋</span> 申请列表
+    </div>
+    <div class="mobile-nav-sep"></div>
+    <div style="padding:6px 20px 2px;font-size:11px;font-weight:600;color:var(--gray-400);">台账管理</div>
+    <div class="mobile-nav-link" id="mnav-regions" onclick="nav('regions');closeMobileNav()">
+      <span>📍</span> 区域管理
+    </div>
+    <div class="mobile-nav-link" id="mnav-dormitories" onclick="nav('dormitories');closeMobileNav()">
+      <span>🏠</span> 宿舍管理
+    </div>
+    <div class="mobile-nav-sep"></div>
+    <div style="padding:6px 20px 2px;font-size:11px;font-weight:600;color:var(--gray-400);">系统</div>
+    <div class="mobile-nav-link" id="mnav-admins" onclick="nav('admins');closeMobileNav()">
+      <span>👥</span> 权限管理
+    </div>
+  </nav>
+</div>
+
+<!-- ════════ MAIN ════════ -->
+<main class="app-main">
+  <div class="content" id="content-area">
+
+  <!-- ══ Dashboard ══ -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-title-bar">
+      <h2>数据概览</h2>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-label">待处理入住申请</div>
+          <div class="stat-icon blue">📝</div>
+        </div>
+        <div class="stat-value">3</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-label">待处理退宿申请</div>
+          <div class="stat-icon orange">📤</div>
+        </div>
+        <div class="stat-value">1</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-label">空置寝室数</div>
+          <div class="stat-icon green">🛏️</div>
+        </div>
+        <div class="stat-value">12</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-label">7天内到期合同数</div>
+          <div class="stat-icon orange">📅</div>
+        </div>
+        <div class="stat-value" style="color:#DC2626">2</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="grid-template-columns:1fr">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">最新申请</div>
+            <div class="card-subtitle">需要及时处理</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="nav('checkin-apply')">查看全部 →</button>
+        </div>
+        <div class="card-body p0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>申请人</th><th>类型</th><th>申请时间</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>李小明</strong><br><span style="font-size:11px;color:#9CA3AF">技术部</span></td>
+                  <td><span class="badge badge-pending">入住申请</span></td>
+                  <td style="white-space:nowrap;">04-03 09:21</td>
+                  <td><span class="badge badge-pending">待审批</span></td>
+                  <td><button class="btn btn-primary btn-sm" onclick="nav('checkin-detail')">处理</button></td>
+                </tr>
+                <tr>
+                  <td><strong>王芳</strong><br><span style="font-size:11px;color:#9CA3AF">市场部</span></td>
+                  <td><span class="badge badge-rejected">退宿申请</span></td>
+                  <td style="white-space:nowrap;">04-03 10:05</td>
+                  <td><span class="badge badge-pending">待审批</span></td>
+                  <td><button class="btn btn-primary btn-sm" onclick="nav('checkout-detail')">处理</button></td>
+                </tr>
+                <tr>
+                  <td><strong>陈建国</strong><br><span style="font-size:11px;color:#9CA3AF">产品部</span></td>
+                  <td><span class="badge badge-pending">入住申请</span></td>
+                  <td style="white-space:nowrap;">04-02 16:30</td>
+                  <td><span class="badge badge-pending">待审批</span></td>
+                  <td><button class="btn btn-primary btn-sm" onclick="nav('checkin-detail')">处理</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col" style="grid-template-columns:1fr">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚠️ 合同临期预警</div>
+          <div class="card-subtitle">到期前 30 天 · 7 天自动提醒</div>
+        </div>
+        <div class="card-body p0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>宿舍名称</th><th>到期日</th><th>剩余天数</th><th>状态</th></tr></thead>
+              <tbody>
+                <tr><td><strong>中关村青年公寓</strong></td><td>2026-04-20</td><td style="color:#DC2626;font-weight:600">3 天</td><td><span class="badge badge-rejected">紧急续签</span></td></tr>
+                <tr><td><strong>朝阳东路公寓</strong></td><td>2026-04-23</td><td style="color:#DC2626;font-weight:600">6 天</td><td><span class="badge badge-rejected">紧急续签</span></td></tr>
+                <tr><td><strong>海淀人才公寓</strong></td><td>2026-05-01</td><td style="color:#D97706;font-weight:600">14 天</td><td><span class="badge badge-warn">即将到期</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 入住申请列表 ══ -->
+  <div class="page" id="page-checkin-apply">
+    <div class="page-title-bar">
+      <h2>申请列表</h2>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('checkin','pending',this)">待审批 <span class="tab-count">4</span></div>
+      <div class="tab" onclick="switchTab('checkin','approved',this)">已通过 <span class="tab-count">70</span></div>
+      <div class="tab" onclick="switchTab('checkin','rejected',this)">已驳回 <span class="tab-count">7</span></div>
+    </div>
+    <div id="checkin-pending">
+      <div class="toolbar">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" placeholder="搜索申请人姓名...">
+        </div>
+        <select class="select-filter"><option>全部部门</option><option>技术部</option><option>市场部</option><option>产品部</option></select>
+        <select class="select-filter"><option>全部区域</option><option>朝阳及望京业务区</option><option>海淀业务区</option><option>东城业务区</option><option>浦东张江业务区</option></select>
+      </div>
+      <div class="card">
+        <div class="card-body p0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>申请人</th><th>申请类型</th><th>部门</th><th>区域/宿舍</th><th>关键时间</th><th>申请说明</th><th>申请时间</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>李小明</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>技术部</td><td>朝阳及望京业务区</td><td>期望入住 2026-04-10</td>
+                  <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">入住时长 3 个月；出差项目驻场需要</td>
+                  <td style="white-space:nowrap;">2026-04-03 09:21</td>
+                  <td><div class="btn-group"><button class="btn btn-primary btn-sm" onclick="nav('checkin-detail')">审批</button><button class="btn btn-danger btn-sm">驳回</button></div></td>
+                </tr>
+                <tr>
+                  <td><strong>陈建国</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>产品部</td><td>海淀业务区</td><td>期望入住 2026-04-08</td>
+                  <td style="color:#9CA3AF;font-style:italic;">入住时长 6 个月（未填写说明）</td>
+                  <td style="white-space:nowrap;">2026-04-02 16:30</td>
+                  <td><div class="btn-group"><button class="btn btn-primary btn-sm" onclick="nav('checkin-detail')">审批</button><button class="btn btn-danger btn-sm">驳回</button></div></td>
+                </tr>
+                <tr>
+                  <td><strong>刘思远</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>运营部</td><td>海淀业务区</td><td>期望入住 2026-04-05</td>
+                  <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">入住时长 1 个月；长期驻场办公</td>
+                  <td style="white-space:nowrap;">2026-04-01 14:10</td>
+                  <td><div class="btn-group"><button class="btn btn-primary btn-sm" onclick="nav('checkin-detail')">审批</button><button class="btn btn-danger btn-sm">驳回</button></div></td>
+                </tr>
+                <tr>
+                  <td><strong>王芳</strong></td><td><span class="badge badge-checkout">退宿申请</span></td><td>市场部</td><td>望京北苑宿舍 · 302室</td><td>预计退宿 2026-04-15</td>
+                  <td>退宿原因：调岗</td>
+                  <td style="white-space:nowrap;">2026-04-03 10:05</td>
+                  <td><button class="btn btn-success btn-sm" onclick="nav('checkout-detail')">审批</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <div class="pagination-info">共 4 条记录</div>
+            <div class="pagination-btns"><div class="page-btn">‹</div><div class="page-btn active">1</div><div class="page-btn">›</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="checkin-approved" style="display:none;">
+      <div class="toolbar">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" placeholder="搜索申请人姓名...">
+        </div>
+        <select class="select-filter"><option>全部部门</option><option>技术部</option><option>市场部</option><option>产品部</option></select>
+        <input type="date" class="select-filter" style="width:140px;">
+        <span style="color:#9CA3AF;font-size:13px;">至</span>
+        <input type="date" class="select-filter" style="width:140px;">
+      </div>
+      <div class="card">
+        <div class="card-body p0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>申请人</th><th>申请类型</th><th>部门</th><th>区域/宿舍</th><th>结果时间</th><th>审批人</th><th>审批时间</th></tr></thead>
+              <tbody>
+                <tr><td><strong>张伟</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>技术部</td><td>朝阳及望京业务区 · 朝阳东路公寓 B室</td><td>入住 2026-03-15</td><td>张明</td><td style="white-space:nowrap;">2026-03-10 11:20</td></tr>
+                <tr><td><strong>赵磊</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>产品部</td><td>朝阳及望京业务区 · 朝阳东路公寓 C室</td><td>入住 2026-02-01</td><td>李建华</td><td style="white-space:nowrap;">2026-01-28 14:05</td></tr>
+                <tr><td><strong>孙晓燕</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>市场部</td><td>海淀业务区 · 中关村青年公寓 203室</td><td>入住 2026-01-20</td><td>张明</td><td style="white-space:nowrap;">2026-01-18 09:30</td></tr>
+                <tr><td><strong>周建明</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>销售部</td><td>朝阳及望京业务区 · 望京北苑宿舍 301室</td><td>入住 2025-12-01</td><td>陈晓雯</td><td style="white-space:nowrap;">2025-11-28 16:45</td></tr>
+                <tr><td><strong>吴芳芳</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>运营部</td><td>海淀业务区 · 上地园区公寓 102室</td><td>入住 2025-11-15</td><td>李建华</td><td style="white-space:nowrap;">2025-11-13 10:10</td></tr>
+                <tr><td><strong>孙磊</strong></td><td><span class="badge badge-checkout">退宿申请</span></td><td>运营部</td><td>中关村青年公寓 · 105室</td><td>退宿 2026-03-01</td><td>张明</td><td style="white-space:nowrap;">2026-02-28 10:15</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <div class="pagination-info">共 70 条记录</div>
+            <div class="pagination-btns"><div class="page-btn">‹</div><div class="page-btn active">1</div><div class="page-btn">2</div><div class="page-btn">3</div><div class="page-btn">›</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="checkin-rejected" style="display:none;">
+      <div class="toolbar">
+        <div class="search-input-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" placeholder="搜索申请人姓名...">
+        </div>
+        <select class="select-filter"><option>全部部门</option><option>技术部</option><option>市场部</option></select>
+      </div>
+      <div class="card">
+        <div class="card-body p0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>申请人</th><th>申请类型</th><th>部门</th><th>区域/宿舍</th><th>申请时间</th><th>驳回原因</th><th>驳回人</th><th>驳回时间</th></tr></thead>
+              <tbody>
+                <tr><td><strong>钱小东</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>技术部</td><td>海淀业务区</td><td style="white-space:nowrap;">2026-03-20 10:30</td><td style="color:#DC2626;">该区域暂无空闲寝室</td><td>张明</td><td style="white-space:nowrap;">2026-03-21 09:00</td></tr>
+                <tr><td><strong>林美华</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>人事部</td><td>朝阳及望京业务区</td><td style="white-space:nowrap;">2026-02-18 15:00</td><td style="color:#DC2626;">非异地办公人员，不符合申请条件</td><td>陈晓雯</td><td style="white-space:nowrap;">2026-02-19 11:30</td></tr>
+                <tr><td><strong>郭大鹏</strong></td><td><span class="badge badge-pending">入住申请</span></td><td>销售部</td><td>浦东张江业务区</td><td style="white-space:nowrap;">2026-01-05 09:15</td><td style="color:#DC2626;">申请材料不完整，请补充后重新提交</td><td>李建华</td><td style="white-space:nowrap;">2026-01-06 14:20</td></tr>
+                <tr><td><strong>马小云</strong></td><td><span class="badge badge-checkout">退宿申请</span></td><td>销售部</td><td>朝阳东路公寓 · D室</td><td style="white-space:nowrap;">2026-02-10 09:30</td><td style="color:#DC2626;">退宿日期填写有误，请重新提交</td><td>张明</td><td style="white-space:nowrap;">2026-02-11 10:00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <div class="pagination-info">共 7 条记录</div>
+            <div class="pagination-btns"><div class="page-btn">‹</div><div class="page-btn active">1</div><div class="page-btn">›</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 入住申请详情 ══ -->
+  <div class="page" id="page-checkin-detail">
+    <div class="breadcrumb">
+      <a onclick="nav('checkin-apply')">申请列表</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>审批处理</span>
+    </div>
+    <div class="two-col">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">申请信息</div></div>
+          <div class="card-body">
+            <div class="detail-panel">
+              <div class="detail-row"><div class="detail-key">申请人</div><div class="detail-val">李小明</div></div>
+              <div class="detail-row"><div class="detail-key">部门</div><div class="detail-val">技术部</div></div>
+              <div class="detail-row"><div class="detail-key">期望区域</div><div class="detail-val">朝阳及望京业务区</div></div>
+              <div class="detail-row"><div class="detail-key">意向宿舍</div><div class="detail-val">朝阳东路公寓</div></div>
+              <div class="detail-row"><div class="detail-key">期望入住</div><div class="detail-val">2026-04-10</div></div>
+              <div class="detail-row"><div class="detail-key">入住时长</div><div class="detail-val">3 个月（至 2026-07-10）</div></div>
+              <div class="detail-row"><div class="detail-key">申请说明</div><div class="detail-val">出差项目驻场需要</div></div>
+              <div class="detail-row"><div class="detail-key">申请时间</div><div class="detail-val">2026-04-03 09:21</div></div>
+            </div>
+            <div style="margin-top:12px;">
+              <div class="alert alert-info"><span>ℹ️</span><span>该员工当前无其他有效入住记录</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">💬 留言</div><div class="card-subtitle">仅管理员可留言</div></div>
+          <div class="card-body">
+            <div class="comment-box">
+              <div class="comment-header">
+                <span class="comment-author">张明（管理员）</span>
+                <span class="comment-time">04-03 10:15</span>
+              </div>
+              <div class="comment-text">已核实，员工驻场项目属实，优先安排朝阳区资源。</div>
+            </div>
+            <div class="comment-input-wrap">
+              <input class="form-input" style="flex:1;" placeholder="添加留言备注...">
+              <button class="btn btn-secondary btn-sm">发送</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">分配寝室</div><div class="card-subtitle">朝阳东路公寓 · 点击蓝色寝室进行选择</div></div>
+        </div>
+        <div class="card-body">
+          <div class="form-group" style="margin-bottom:12px;">
+            <div class="form-label req">选择宿舍</div>
+            <select class="form-select"><option>朝阳东路公寓（空闲 3 间）</option><option>望京北苑宿舍（空闲 2 间）</option><option>上地园区公寓（空闲 4 间）</option></select>
+          </div>
+          <div class="form-label" style="margin-bottom:8px;">选择寝室（仅展示待入住寝室）</div>
+          <div class="room-selector">
+            <div class="room-cell selected"><div class="room-num">A室</div><div class="room-status-label">已选</div></div>
+            <div class="room-cell available"><div class="room-num">B室</div><div class="room-status-label">待入住</div></div>
+            <div class="room-cell occupied"><div class="room-num">C室</div><div class="room-status-label">已入住</div></div>
+            <div class="room-cell occupied"><div class="room-num">D室</div><div class="room-status-label">已入住</div></div>
+            <div class="room-cell available"><div class="room-num">E室</div><div class="room-status-label">待入住</div></div>
+            <div class="room-cell room-disabled"><div class="room-num">F室</div><div class="room-status-label">已停用</div></div>
+            <div class="room-cell occupied"><div class="room-num">G室</div><div class="room-status-label">已入住</div></div>
+            <div class="room-cell available"><div class="room-num">H室</div><div class="room-status-label">待入住</div></div>
+          </div>
+          <div style="margin-top:16px;" class="form-grid">
+            <div class="form-group">
+              <div class="form-label req">确认入住日期</div>
+              <input class="form-input" type="date" value="2026-04-10">
+            </div>
+            <div class="form-group">
+              <div class="form-label">预计退宿日期</div>
+              <input class="form-input" type="date" value="2026-07-10">
+            </div>
+            <div class="form-group" style="grid-column:1/-1;">
+              <div class="form-label">驳回原因（驳回时必填）</div>
+              <textarea class="form-textarea" placeholder="如需驳回申请，请填写原因..." style="min-height:60px;"></textarea>
+            </div>
+          </div>
+          <div class="form-actions" style="margin-top:16px;">
+            <button class="btn btn-success">✓ 同意并分配 A室</button>
+            <button class="btn btn-danger">✕ 驳回申请</button>
+            <button class="btn btn-secondary" onclick="nav('checkin-apply')">返回列表</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 退宿申请详情 ══ -->
+  <div class="page" id="page-checkout-detail">
+    <div class="breadcrumb">
+      <a onclick="nav('checkin-apply')">申请列表</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>审批退宿</span>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><div class="card-title">退宿申请信息</div></div>
+        <div class="card-body">
+          <div class="detail-panel" style="margin-bottom:16px;">
+            <div class="detail-row"><div class="detail-key">员工姓名</div><div class="detail-val">王芳</div></div>
+            <div class="detail-row"><div class="detail-key">部门</div><div class="detail-val">市场部</div></div>
+            <div class="detail-row"><div class="detail-key">当前宿舍</div><div class="detail-val">望京北苑宿舍</div></div>
+            <div class="detail-row"><div class="detail-key">当前寝室</div><div class="detail-val">302室</div></div>
+            <div class="detail-row"><div class="detail-key">入住时间</div><div class="detail-val">2026-01-15</div></div>
+            <div class="detail-row"><div class="detail-key">预计退宿</div><div class="detail-val">2026-04-15</div></div>
+            <div class="detail-row"><div class="detail-key">退宿原因</div><div class="detail-val">调岗</div></div>
+            <div class="detail-row"><div class="detail-key">备注说明</div><div class="detail-val">调回总部，不再需要宿舍</div></div>
+          </div>
+          <div class="alert alert-warning"><span>⚠️</span><span>审批通过后，寝室状态将变更为"待入住"，入住记录状态更新为"已退宿"，并自动通知员工。</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">审批操作</div></div>
+        <div class="card-body">
+          <div class="form-grid cols1" style="gap:14px;">
+            <div class="form-group"><div class="form-label req">实际退宿日期</div><input class="form-input" type="date" value="2026-04-15"></div>
+            <div class="form-group"><div class="form-label">房间检查情况（备注）</div><textarea class="form-textarea" placeholder="如：房间整洁，无损坏..." style="min-height:70px;"></textarea></div>
+            <hr class="form-divider">
+            <div class="form-group"><div class="form-label">驳回原因（驳回时必填）</div><textarea class="form-textarea" placeholder="如需驳回，请填写原因..." style="min-height:60px;"></textarea></div>
+          </div>
+          <div class="form-actions" style="margin-top:16px;">
+            <button class="btn btn-success">✓ 同意退宿</button>
+            <button class="btn btn-danger">✕ 驳回申请</button>
+            <button class="btn btn-secondary" onclick="nav('checkin-apply')">返回列表</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 区域管理 ══ -->
+  <div class="page" id="page-regions">
+    <div class="page-title-bar">
+      <h2>区域管理</h2>
+      <button class="btn btn-primary" onclick="nav('region-new')">+ 新增区域</button>
+    </div>
+    <div class="toolbar">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" placeholder="搜索区域名称...">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body p0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>区域名称</th><th>省</th><th>市</th><th>关联宿舍数</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>朝阳及望京业务区</strong></td><td>北京市</td><td>北京市</td><td>2</td>
+                <td><div class="btn-group"><button class="btn btn-secondary btn-sm">编辑</button><button class="btn btn-danger btn-sm" style="opacity:.45;cursor:not-allowed" title="请先迁移下属宿舍">删除</button></div></td>
+              </tr>
+              <tr>
+                <td><strong>海淀业务区</strong></td><td>北京市</td><td>北京市</td><td>2</td>
+                <td><div class="btn-group"><button class="btn btn-secondary btn-sm">编辑</button><button class="btn btn-danger btn-sm" style="opacity:.45;cursor:not-allowed" title="请先迁移下属宿舍">删除</button></div></td>
+              </tr>
+              <tr>
+                <td><strong>东城业务区</strong></td><td>北京市</td><td>北京市</td><td>1</td>
+                <td><div class="btn-group"><button class="btn btn-secondary btn-sm">编辑</button><button class="btn btn-danger btn-sm" style="opacity:.45;cursor:not-allowed" title="请先迁移下属宿舍">删除</button></div></td>
+              </tr>
+              <tr>
+                <td><strong>浦东张江业务区</strong></td><td>上海市</td><td>上海市</td><td>0</td>
+                <td><div class="btn-group"><button class="btn btn-secondary btn-sm">编辑</button><button class="btn btn-danger btn-sm">删除</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <div class="pagination-info">共 4 条区域</div>
+          <div class="pagination-btns"><div class="page-btn">‹</div><div class="page-btn active">1</div><div class="page-btn">›</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-info" style="margin-top:16px;"><span>ℹ️</span><span>区域用于员工端按片区分组申请宿舍；每个宿舍必须归属于一个区域，区域上维护的省、市将在新增宿舍时默认填入详细地址（仍可在表单中修改区县与街道）。</span></div>
+  </div>
+
+  <!-- ══ 新增区域 ══ -->
+  <div class="page" id="page-region-new">
+    <div class="breadcrumb"><a onclick="nav('regions')">区域管理</a><span class="breadcrumb-sep">/</span><span>新增区域</span></div>
+    <div class="card" style="max-width:560px;">
+      <div class="card-header"><div class="card-title">区域信息</div></div>
+      <div class="card-body">
+        <div class="form-grid" style="margin-bottom:16px;">
+          <div class="form-group" style="grid-column:1/-1;">
+            <div class="form-label req">区域名称</div>
+            <input class="form-input" placeholder="如：华南制造基地片区">
+          </div>
+          <div class="form-group">
+            <div class="form-label req">省</div>
+            <select class="form-select"><option value="">请选择</option><option>北京市</option><option>上海市</option><option>广东省</option><option>浙江省</option></select>
+          </div>
+          <div class="form-group">
+            <div class="form-label req">市</div>
+            <select class="form-select"><option value="">请选择</option><option>北京市</option><option>上海市</option><option>广州市</option><option>深圳市</option></select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="alert('演示：区域已保存');nav('regions');">保存</button>
+          <button class="btn btn-secondary" onclick="nav('regions')">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 宿舍管理 ══ -->
+  <div class="page" id="page-dormitories">
+    <div class="page-title-bar">
+      <h2>宿舍管理</h2>
+      <button class="btn btn-primary" onclick="nav('dormitory-new')">+ 新增宿舍</button>
+    </div>
+    <div class="toolbar">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" placeholder="搜索宿舍名称...">
+      </div>
+      <select class="select-filter"><option>全部区域</option><option>朝阳及望京业务区</option><option>海淀业务区</option><option>东城业务区</option></select>
+      <select class="select-filter"><option>全部状态</option><option>启用</option><option>停用</option></select>
+    </div>
+    <div class="card">
+      <div class="card-body p0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>宿舍名称</th><th>所属区域</th><th>地址</th><th>合同期限</th><th>总寝室</th><th>未入住</th><th>入住率</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr style="cursor:pointer" onclick="nav('dormitory-detail')" title="点击进入详情">
+                <td><strong>朝阳东路公寓</strong></td><td>朝阳及望京业务区</td><td>北京市朝阳区东路18号</td>
+                <td style="white-space:nowrap;">2025-01-01 ~ <span style="color:#D97706;font-weight:500;">2026-04-14</span></td>
+                <td>8</td><td>3</td>
+                <td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-bar" style="width:70px;"><div class="progress-fill" style="width:63%"></div></div><span style="font-size:12px">63%</span></div></td>
+                <td><span class="badge badge-enabled">启用</span></td>
+                <td onclick="event.stopPropagation()"><div class="btn-group"><button class="btn btn-secondary btn-sm">编辑</button><button class="btn btn-warning btn-sm">停用</button></div></td>
+              </tr>
+              <tr style="cursor:pointer" onclick="nav('dormitory-detail')" title="点击进入详情">
+                <td><strong>望京北苑宿舍</strong></td><td>朝阳及望京业务区</td><td>北京市望京北路52号院</td>
+                <td style="white-space:nowrap;">2025-03-01 ~ 2026-12-31</td>
+                <td>10</td><td>2</td>
+                <td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-bar" style="width:70px;"><div class="progress-fill orange" style="width:80%"></div></div><span style="font-size:12px">80%</span></div></td>
+                <td><span class="badge badge-enabled">启用</span></td>
+                <td onclick="event.stopPropagation()"><div class="btn-group"><button class="btn btn-secondary btn-sm">编辑</button><button class="btn btn-warning btn-sm">停用</button></div></td>
+              </tr>
+              <tr style="cursor:pointer" onclick="nav('dormitory-detail')" title="点击进入详情">
+                <td><strong>中关村青年公寓</strong></td><td>海淀业务区</td><td>北京市海淀区中关村南街8号</td>
+                <td style="white-space:nowrap;">2025-05-01 ~ <span style="color:#DC2626;font-weight:500;">2026-05-01</span></td>
+                <td>12</td><td>0</td>
+                <td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-bar" style="width:70px;"><div class="progress-fill" style="width:100%;background:#DC2626"></div></div><span style="font-size:12px;color:#DC2626;font-weight:600">100%</span></div></td>
+                <td><span class="badge badge-enabled">启用</span></td>
+                <td onclick="event.stopPropagation()"><div class="btn-group"><button class="btn btn-secondary btn-sm">编辑</button><button class="btn btn-warning btn-sm" style="opacity:.4;cursor:not-allowed" title="存在已入住寝室，不可停用">停用</button></div></td>
+              </tr>
+              <tr style="cursor:pointer" onclick="nav('dormitory-detail')" title="点击进入详情">
+                <td><strong>旧城员工公寓</strong></td><td>东城业务区</td><td>北京市东城区旧城路5号</td>
+                <td style="white-space:nowrap;">2023-01-01 ~ 2025-12-31</td>
+                <td>6</td><td>6</td>
+                <td><div style="display:flex;align-items:center;gap:8px;"><div class="progress-bar" style="width:70px;"><div class="progress-fill" style="width:0%"></div></div><span style="font-size:12px">0%</span></div></td>
+                <td><span class="badge badge-disabled">停用</span></td>
+                <td onclick="event.stopPropagation()"><div class="btn-group"><button class="btn btn-secondary btn-sm">编辑</button><button class="btn btn-success btn-sm">启用</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <div class="pagination-info">共 6 条宿舍</div>
+          <div class="pagination-btns"><div class="page-btn">‹</div><div class="page-btn active">1</div><div class="page-btn">2</div><div class="page-btn">›</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 宿舍详情 ══ -->
+  <div class="page" id="page-dormitory-detail">
+    <div class="breadcrumb">
+      <a onclick="nav('dormitories')">宿舍管理</a>
+      <span class="breadcrumb-sep">/</span>
+      <span id="breadcrumb-dorm-name">朝阳东路公寓</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:0;">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">基本信息</div>
+            <div style="display:flex;gap:8px;align-items:center;"><span class="badge badge-enabled">启用</span><button class="btn btn-secondary btn-sm" onclick="openDormBasicModal()">编辑</button></div>
+          </div>
+          <div class="card-body">
+            <div class="detail-panel">
+              <div class="detail-row"><div class="detail-key">宿舍名称</div><div class="detail-val" id="detail-dorm-name">朝阳东路公寓</div></div>
+              <div class="detail-row"><div class="detail-key">所属区域</div><div class="detail-val" id="detail-region">朝阳及望京业务区</div></div>
+              <div class="detail-row"><div class="detail-key">详细地址</div><div class="detail-val" id="detail-address">北京市朝阳区东路18号</div></div>
+              <div class="detail-row"><div class="detail-key">户型</div><div class="detail-val" id="detail-layout">多室合租</div></div>
+              <div class="detail-row"><div class="detail-key">面积</div><div class="detail-val" id="detail-area">120 m²</div></div>
+              <div class="detail-row"><div class="detail-key">租金</div><div class="detail-val" id="detail-rent">¥ 15,000 / 月</div></div>
+              <div class="detail-row"><div class="detail-key">押金</div><div class="detail-val" id="detail-deposit">¥ 30,000</div></div>
+              <div class="detail-row"><div class="detail-key">合同期限</div><div class="detail-val" id="detail-contract"><span id="detail-contract-start">2025-01-01</span> ~ <span id="detail-contract-end" style="color:#D97706;">2026-04-14</span></div></div>
+              <div class="detail-row"><div class="detail-key">付款方式</div><div class="detail-val" id="detail-payment">季付</div></div>
+              <div class="detail-row"><div class="detail-key">宽带费</div><div class="detail-val" id="detail-broadband-fee">¥ 1,200 / 年</div></div>
+              <div class="detail-row"><div class="detail-key">宽带到期日</div><div class="detail-val" id="detail-broadband-expiry">2026-12-31</div></div>
+              <div class="detail-row"><div class="detail-key">物业费</div><div class="detail-val" id="detail-property-fee">¥ 800 / 月</div></div>
+              <div class="detail-row"><div class="detail-key">电费账号</div><div class="detail-val" id="detail-electric-account">110101****2345</div></div>
+              <div class="detail-row"><div class="detail-key">水费账号</div><div class="detail-val" id="detail-water-account">11010****8901</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">🔐 密码与房东信息</div><div class="card-subtitle">点击眼睛图标查看明文</div></div><button class="btn btn-secondary btn-sm" onclick="openDormAccessModal()">编辑</button></div>
+          <div class="card-body">
+            <div class="detail-panel">
+              <div class="detail-row"><div class="detail-key">WIFI 名称</div><div class="detail-val" id="detail-wifi-name">CY_East18</div></div>
+              <div class="detail-row"><div class="detail-key">WIFI 密码</div><div class="detail-val"><span class="detail-masked" id="detail-wifi-password" data-plain="east18@wifi">••••••••</span><span class="eye-btn" id="detail-wifi-password-btn" onclick="toggleSecret('detail-wifi-password', 'detail-wifi-password-btn')">👁 查看</span></div></div>
+              <div class="detail-row"><div class="detail-key">门禁密码</div><div class="detail-val"><span class="detail-masked" id="detail-door-password" data-plain="2468">••••</span><span class="eye-btn" id="detail-door-password-btn" onclick="toggleSecret('detail-door-password', 'detail-door-password-btn')">👁 查看</span></div></div>
+              <div class="detail-row"><div class="detail-key">房东姓名</div><div class="detail-val" id="detail-landlord-name">赵建国</div></div>
+              <div class="detail-row"><div class="detail-key">联系方式</div><div class="detail-val" id="detail-landlord-phone">13800001234</div></div>
+              <div class="detail-row"><div class="detail-key">账户信息</div><div class="detail-val" id="detail-landlord-account">6222020202020202020</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="height:fit-content;">
+          <div class="card-header" style="flex-wrap:wrap;gap:10px;">
+            <div>
+              <div class="card-title">寝室列表</div>
+              <div class="card-subtitle">本宿舍内寝室维护与增删改查</div>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" onclick="openRoomModal('new')">+ 新增寝室</button>
+          </div>
+          <div class="card-body p0">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>寝室名称</th><th>面积</th><th>状态</th><th>入住人</th><th>入住时间</th><th>操作</th></tr></thead>
+              <tbody id="dorm-room-table-body">
+                <tr data-room-name="A室"><td class="room-cell-name">A室</td><td class="room-cell-area">25 m²</td><td class="room-cell-status"><span class="badge badge-available">待入住</span></td><td>—</td><td>—</td><td><div class="btn-group"><button type="button" class="btn btn-primary btn-sm" onclick="openCheckinModal('A室','朝阳东路公寓')">入住登记</button><button type="button" class="btn btn-secondary btn-sm" onclick="openRoomModal('edit','A室')">编辑</button><button type="button" class="btn btn-warning btn-sm">停用</button><button type="button" class="btn btn-danger btn-sm" onclick="alert('演示：已删除寝室 A室')">删除</button></div></td></tr>
+                <tr data-room-name="B室"><td class="room-cell-name">B室</td><td class="room-cell-area">25 m²</td><td class="room-cell-status"><span class="badge badge-occupied">已入住</span></td><td>刘洋</td><td>2026-01-10</td><td><div class="btn-group"><button type="button" class="btn btn-warning btn-sm" onclick="openCheckoutModal('B室','朝阳东路公寓','刘洋','2026-01-10')">退宿登记</button><button type="button" class="btn btn-secondary btn-sm" onclick="openRoomModal('edit','B室')">编辑</button><button type="button" class="btn btn-danger btn-sm" style="opacity:.45;cursor:not-allowed" title="已入住不可删除">删除</button></div></td></tr>
+                <tr data-room-name="C室"><td class="room-cell-name">C室</td><td class="room-cell-area">25 m²</td><td class="room-cell-status"><span class="badge badge-occupied">已入住</span></td><td>赵磊</td><td>2026-02-01</td><td><div class="btn-group"><button type="button" class="btn btn-warning btn-sm" onclick="openCheckoutModal('C室','朝阳东路公寓','赵磊','2026-02-01')">退宿登记</button><button type="button" class="btn btn-secondary btn-sm" onclick="openRoomModal('edit','C室')">编辑</button><button type="button" class="btn btn-danger btn-sm" style="opacity:.45;cursor:not-allowed" title="已入住不可删除">删除</button></div></td></tr>
+                <tr data-room-name="D室"><td class="room-cell-name">D室</td><td class="room-cell-area">20 m²</td><td class="room-cell-status"><span class="badge badge-disabled">已停用</span></td><td>—</td><td>—</td><td><div class="btn-group"><button type="button" class="btn btn-success btn-sm">启用</button><button type="button" class="btn btn-secondary btn-sm" onclick="openRoomModal('edit','D室')">编辑</button><button type="button" class="btn btn-danger btn-sm" onclick="alert('演示：已删除寝室 D室')">删除</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </div>
+
+        <div class="card" style="height:fit-content;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">入住记录</div>
+              <div class="card-subtitle">本宿舍历史入住台账</div>
+            </div>
+          </div>
+          <div class="card-body">
+          <div class="toolbar" style="margin-bottom:12px;">
+            <div class="search-input-wrap" style="flex:1;min-width:140px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input class="search-input" placeholder="搜索员工姓名或工号...">
+            </div>
+            <select class="select-filter"><option>全部状态</option><option>已入住</option><option>已退宿</option></select>
+            <input type="date" class="select-filter" style="width:130px;"><span style="color:#9CA3AF;font-size:13px;">至</span><input type="date" class="select-filter" style="width:130px;">
+          </div>
+          <div class="table-wrap" style="border:1px solid var(--gray-100);border-radius:8px;">
+            <table>
+              <thead><tr><th>员工姓名</th><th>工号</th><th>部门</th><th>寝室</th><th>入住时间</th><th>预计退宿</th><th>实际退宿</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>刘洋</td><td>EMP001</td><td>技术部</td><td>B室</td><td>2026-01-10</td><td>2026-07-10</td><td>—</td><td><span class="badge badge-occupied">已入住</span></td><td><div class="btn-group"><button type="button" class="btn btn-secondary btn-sm" onclick="alert('演示：查看入住记录详情')">查看</button></div></td></tr>
+                <tr><td>赵磊</td><td>EMP002</td><td>产品部</td><td>C室</td><td>2026-02-01</td><td>2026-08-01</td><td>—</td><td><span class="badge badge-occupied">已入住</span></td><td><div class="btn-group"><button type="button" class="btn btn-secondary btn-sm" onclick="alert('演示：查看入住记录详情')">查看</button></div></td></tr>
+                <tr><td>陈红</td><td>EMP005</td><td>人事部</td><td>A室</td><td>2025-09-01</td><td>2025-12-31</td><td>2025-12-31</td><td><span class="badge badge-done">已退宿</span></td><td><div class="btn-group"><button type="button" class="btn btn-secondary btn-sm" onclick="alert('演示：查看入住记录详情')">查看</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination" style="border:none;padding:12px 0 0;">
+            <div class="pagination-info">本宿舍共 3 条记录</div>
+            <div class="pagination-btns"><div class="page-btn">&#8249;</div><div class="page-btn active">1</div><div class="page-btn">›</div></div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 新增宿舍 ══ -->
+  <div class="page" id="page-dormitory-new">
+    <div class="breadcrumb"><a onclick="nav('dormitories')">宿舍管理</a><span class="breadcrumb-sep">/</span><span>新增宿舍</span></div>
+    <div class="card" style="max-width:760px;">
+      <div class="card-header"><div class="card-title">新增宿舍信息</div></div>
+      <div class="card-body">
+        <div class="form-grid" style="margin-bottom:4px;">
+          <div class="form-section-title" style="border:none;padding-top:0;">基本信息</div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <div class="form-label req">所属区域</div>
+            <select class="form-select" id="dorm-new-region">
+              <option value="">请选择区域</option>
+              <option value="朝阳及望京业务区">朝阳及望京业务区</option>
+              <option value="海淀业务区">海淀业务区</option>
+              <option value="东城业务区">东城业务区</option>
+              <option value="浦东张江业务区">浦东张江业务区</option>
+            </select>
+            <div class="form-hint">选择后，下方地址中的省、市将默认按该区域维护的省市填写，仍可在下拉框中修改；区县与街道请据实补充。</div>
+          </div>
+          <div class="form-group"><div class="form-label req">宿舍名称</div><input class="form-input" placeholder="全局唯一，如：朝阳东路公寓"></div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <div class="form-label req">宿舍地址</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <select class="form-select" id="dorm-new-province" style="flex:1;min-width:100px;">
+                <option value="">请选择省份</option>
+                <option selected>北京市</option>
+                <option>上海市</option>
+                <option>广东省</option>
+                <option>浙江省</option>
+              </select>
+              <select class="form-select" id="dorm-new-city" style="flex:1;min-width:100px;">
+                <option value="">请选择城市</option>
+                <option selected>北京市</option>
+                <option>上海市</option>
+                <option>广州市</option>
+                <option>深圳市</option>
+              </select>
+              <select class="form-select" id="dorm-new-district" style="flex:1;min-width:100px;">
+                <option value="">请选择区县</option>
+                <option selected>朝阳区</option>
+                <option>海淀区</option>
+                <option>东城区</option>
+                <option>西城区</option>
+                <option>浦东新区</option>
+                <option>黄浦区</option>
+              </select>
+            </div>
+            <input class="form-input" style="margin-top:8px;" placeholder="街道详细地址，如：东路18号">
+          </div>
+          <div class="form-group"><div class="form-label">户型</div><input class="form-input" placeholder="如：多室合租"></div>
+          <div class="form-group"><div class="form-label">面积（m²）</div><input class="form-input" type="number" placeholder="如：120"></div>
+          <div class="form-group"><div class="form-label req">租金</div><input class="form-input" type="number" placeholder="元"></div>
+          <div class="form-group"><div class="form-label req">付款方式</div><select class="form-select"><option>月付</option><option>季付</option><option>半年付</option><option>年付</option></select></div>
+          <div class="form-group"><div class="form-label">押金（元）</div><input class="form-input" type="number" placeholder="如：30000"></div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <div class="form-label req">合同期限</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><input class="form-input" type="date" style="flex:1;min-width:130px;"><span style="color:var(--gray-400);">至</span><input class="form-input" type="date" style="flex:1;min-width:130px;"></div>
+          </div>
+          <div class="form-group" style="grid-column:1/-1;"><div class="form-label">备注</div><textarea class="form-textarea" placeholder="备注说明（选填）" style="min-height:60px;"></textarea></div>
+          <div class="form-section-title">其他费用</div>
+          <div class="form-group"><div class="form-label">宽带费（元/年）</div><input class="form-input" type="number" placeholder="如：1200"></div>
+          <div class="form-group"><div class="form-label">宽带到期日</div><input class="form-input" type="date"></div>
+          <div class="form-group"><div class="form-label">物业费（元/月）</div><input class="form-input" type="number" placeholder="如：800"></div>
+          <div class="form-group"><div class="form-label">电费缴纳账号</div><input class="form-input" placeholder="电费缴费账号"></div>
+          <div class="form-group"><div class="form-label">水费缴纳账号</div><input class="form-input" placeholder="水费缴费账号"></div>
+          <div class="form-group"><div class="form-label">燃气费说明</div><input class="form-input" placeholder="燃气缴费说明（选填）"></div>
+          <div class="form-section-title">密码信息</div>
+          <div class="form-group"><div class="form-label">WIFI 名称</div><input class="form-input" placeholder="如：CY_East18"></div>
+          <div class="form-group"><div class="form-label">WIFI 密码</div><input class="form-input" type="password" placeholder="WIFI 连接密码"></div>
+          <div class="form-group"><div class="form-label">门禁密码</div><input class="form-input" type="password" placeholder="门禁/门锁密码"></div>
+          <div class="form-section-title">房东信息</div>
+          <div class="form-group"><div class="form-label">房东姓名</div><input class="form-input" placeholder="房东联系人姓名"></div>
+          <div class="form-group"><div class="form-label">联系方式</div><input class="form-input" placeholder="房东手机号"></div>
+          <div class="form-group" style="grid-column:1/-1;"><div class="form-label">房东账户信息</div><input class="form-input" placeholder="银行卡号或支付宝账号（敏感信息，加密存储）"></div>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary">保存</button><button class="btn btn-secondary" onclick="nav('dormitories')">取消</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 权限管理 ══ -->
+  <div class="page" id="page-admins">
+    <div class="page-title-bar">
+      <h2>权限管理</h2>
+      <button class="btn btn-primary" onclick="openAddAdminModal()">+ 新增管理员</button>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">管理员权限配置</div><div class="card-subtitle">共 3 名管理员（含首启管理员）</div></div>
+      <div class="card-body">
+        <div class="list-item">
+          <div class="list-item-left">
+            <div class="list-item-avatar" style="background:#0089FF;">张</div>
+            <div><div style="font-weight:600;font-size:14px;">张明</div><div style="font-size:12px;color:#9CA3AF;margin-top:2px;">行政部 · EMP-001</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span class="badge badge-superadmin">首启管理员</span>
+            <div class="btn-group"><button class="btn btn-secondary btn-sm" onclick="openEditAdminModal('张明','行政部','EMP-001')">编辑权限</button><button class="btn btn-danger btn-sm" style="opacity:.4;cursor:not-allowed" title="首启管理员不可删除">删除</button></div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-left">
+            <div class="list-item-avatar" style="background:#7C3AED;">李</div>
+            <div><div style="font-weight:600;font-size:14px;">李建华</div><div style="font-size:12px;color:#9CA3AF;margin-top:2px;">行政部 · EMP-012</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span class="badge badge-admin">宿舍管理员</span>
+            <div class="btn-group"><button class="btn btn-secondary btn-sm" onclick="openEditAdminModal('李建华','行政部','EMP-012')">编辑权限</button><button class="btn btn-danger btn-sm" onclick="openDelAdminModal('李建华','行政部','宿舍管理员')">删除</button></div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-left">
+            <div class="list-item-avatar" style="background:#059669;">陈</div>
+            <div><div style="font-weight:600;font-size:14px;">陈晓雯</div><div style="font-size:12px;color:#9CA3AF;margin-top:2px;">行政部 · EMP-023</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span class="badge badge-admin">宿舍管理员</span>
+            <div class="btn-group"><button class="btn btn-secondary btn-sm" onclick="openEditAdminModal('陈晓雯','行政部','EMP-023')">编辑权限</button><button class="btn btn-danger btn-sm" onclick="openDelAdminModal('陈晓雯','行政部','宿舍管理员')">删除</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ════════ Mobile bottom nav ════════ -->
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+  <div class="m-nav-item active" id="mnav-m-dashboard" onclick="nav('dashboard')">
+    <div class="m-nav-icon">📊</div>
+    <span>概览</span>
+  </div>
+  <div class="m-nav-item" id="mnav-m-checkin-apply" onclick="nav('checkin-apply')">
+    <div class="m-nav-icon">📋</div>
+    <span>申请</span>
+  </div>
+  <div class="m-nav-item" id="mnav-m-dormitories" onclick="nav('dormitories')">
+    <div class="m-nav-icon">🏠</div>
+    <span>宿舍</span>
+  </div>
+  <div class="m-nav-item" id="mnav-m-regions" onclick="nav('regions')">
+    <div class="m-nav-icon">📍</div>
+    <span>区域</span>
+  </div>
+  <div class="m-nav-item" id="mnav-m-more" onclick="toggleMoreMenu()">
+    <div class="m-nav-icon">⋯</div>
+    <span>更多</span>
+  </div>
+</nav>
+
+<!-- More menu -->
+<div class="more-menu-mask" id="more-menu-mask" onclick="closeMoreMenu()"></div>
+  <div id="more-menu-panel" style="display:none;" class="more-menu-panel">
+  <div class="more-menu-title">更多功能</div>
+  <div class="more-menu-item" onclick="nav('regions');closeMoreMenu()">📍 区域管理</div>
+  <div class="more-menu-item" id="mnav-more-admins" onclick="nav('admins');closeMoreMenu()">👥 权限管理</div>
+</div>
+
+<!-- ════════ 新增管理员弹窗 ════════ -->
+<div class="modal-mask" id="modal-add-admin">
+  <div class="modal" style="width:500px;">
+    <div class="modal-header"><div class="modal-title">新增管理员</div><button class="modal-close" onclick="closeModal('modal-add-admin')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert alert-info" style="margin-bottom:16px;"><span>ℹ️</span><span>从钉钉通讯录中选择员工，授予宿舍管理系统的操作权限。</span></div>
+      <div class="form-grid" style="gap:14px;">
+        <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-label req">选择员工</div>
+          <div class="person-picker" id="aa-person-picker" onclick="selectAdminPerson()">
+            <span class="person-placeholder" id="aa-person-placeholder">点击选择员工（钉钉选人组件）</span>
+            <div id="aa-person-tag" style="display:none;"><div class="person-tag"><span id="aa-person-name"></span><span class="person-tag-del" onclick="clearAdminPerson(event)">×</span></div></div>
+          </div>
+          <div class="form-hint">已是管理员的员工不可重复添加</div>
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-label req">角色</div>
+          <select class="form-select" id="aa-role"><option value="admin">宿舍管理员</option></select>
+          <div class="form-hint">首启管理员由钉钉应用安装事件自动分配，不可手动指定</div>
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-label">可管辖宿舍（数据权限）</div>
+          <div style="border:1px solid var(--gray-300);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked> <span>全部宿舍（不限制）</span></label>
+            <div style="border-top:1px solid var(--gray-100);padding-top:8px;display:flex;flex-direction:column;gap:6px;">
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:var(--gray-400);"><input type="checkbox" disabled> 朝阳东路公寓</label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:var(--gray-400);"><input type="checkbox" disabled> 望京北苑宿舍</label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:var(--gray-400);"><input type="checkbox" disabled> 中关村青年公寓</label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:var(--gray-400);"><input type="checkbox" disabled> 上地园区公寓</label>
+            </div>
+          </div>
+          <div class="form-hint">取消"全部宿舍"可单独指定管辖范围</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-add-admin')">取消</button><button class="btn btn-primary" onclick="confirmAddAdmin()">确认添加</button></div>
+  </div>
+</div>
+
+<!-- 编辑权限弹窗 -->
+<div class="modal-mask" id="modal-edit-admin">
+  <div class="modal" style="width:500px;">
+    <div class="modal-header"><div class="modal-title">编辑权限</div><button class="modal-close" onclick="closeModal('modal-edit-admin')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-info-panel" style="margin-bottom:16px;">
+        <div class="modal-info-row"><div class="modal-info-key">员工姓名</div><div class="modal-info-val" id="ea-name">—</div></div>
+        <div class="modal-info-row"><div class="modal-info-key">部门</div><div class="modal-info-val" id="ea-dept">—</div></div>
+        <div class="modal-info-row"><div class="modal-info-key">工号</div><div class="modal-info-val" id="ea-empid">—</div></div>
+      </div>
+      <div class="form-grid" style="gap:14px;">
+        <div class="form-group" style="grid-column:1/-1;"><div class="form-label req">角色</div><select class="form-select" id="ea-role"><option value="admin">宿舍管理员</option></select></div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-label">可管辖宿舍（数据权限范围）</div>
+          <div style="border:1px solid var(--gray-300);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:8px;" id="ea-dorm-panel">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" id="ea-all" onchange="toggleEaAll(this)"> <span style="font-weight:500;">全部宿舍（不限制）</span></label>
+            <div style="border-top:1px solid var(--gray-100);padding-top:8px;display:flex;flex-direction:column;gap:6px;" id="ea-dorm-list">
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" class="ea-dorm" value="朝阳东路公寓" checked> 朝阳东路公寓</label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" class="ea-dorm" value="望京北苑宿舍" checked> 望京北苑宿舍</label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" class="ea-dorm" value="中关村青年公寓"> 中关村青年公寓</label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" class="ea-dorm" value="上地园区公寓"> 上地园区公寓</label>
+            </div>
+          </div>
+          <div class="form-hint">勾选"全部宿舍"时下方选项自动禁用</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-edit-admin')">取消</button><button class="btn btn-primary" onclick="confirmEditAdmin()">保存权限</button></div>
+  </div>
+</div>
+
+<!-- 删除管理员弹窗 -->
+<div class="modal-mask" id="modal-del-admin">
+  <div class="modal" style="width:420px;">
+    <div class="modal-header"><div class="modal-title" style="color:var(--danger);">删除管理员</div><button class="modal-close" onclick="closeModal('modal-del-admin')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert alert-danger" style="margin-bottom:16px;"><span>⚠️</span><span>删除后该员工将立即失去系统操作权限，正在处理中的审批任务不受影响，但无法再接收新的待办推送。</span></div>
+      <div class="modal-info-panel">
+        <div class="modal-info-row"><div class="modal-info-key">员工姓名</div><div class="modal-info-val" id="da-name">—</div></div>
+        <div class="modal-info-row"><div class="modal-info-key">部门</div><div class="modal-info-val" id="da-dept">—</div></div>
+        <div class="modal-info-row"><div class="modal-info-key">角色</div><div class="modal-info-val" id="da-role">—</div></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-del-admin')">取消</button><button class="btn btn-danger" onclick="confirmDelAdmin()">确认删除</button></div>
+  </div>
+</div>
+
+<!-- 入住登记弹窗 -->
+<div class="modal-mask" id="modal-checkin">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">入住登记（手动）</div><button class="modal-close" onclick="closeModal('modal-checkin')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-info-panel">
+        <div class="modal-info-row"><div class="modal-info-key">所属宿舍</div><div class="modal-info-val" id="ci-dorm">—</div></div>
+        <div class="modal-info-row"><div class="modal-info-key">寝室名称</div><div class="modal-info-val" id="ci-room">—</div></div>
+        <div class="modal-info-row"><div class="modal-info-key">当前状态</div><div class="modal-info-val"><span class="badge badge-available">待入住</span></div></div>
+      </div>
+      <div class="form-grid" style="gap:14px;">
+        <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-label req">入住员工</div>
+          <div class="person-picker" id="ci-person-picker" onclick="selectPerson()">
+            <span class="person-placeholder" id="ci-person-placeholder">点击选择员工（钉钉选人组件）</span>
+            <div id="ci-person-tag" style="display:none;"><div class="person-tag"><span id="ci-person-name">张三</span><span class="person-tag-del" onclick="clearPerson(event)">×</span></div></div>
+          </div>
+          <div class="form-hint">从钉钉通讯录中选择员工</div>
+        </div>
+        <div class="form-group"><div class="form-label req">入住日期</div><input class="form-input" type="date" id="ci-date"></div>
+        <div class="form-group"><div class="form-label">预计退宿日期</div><input class="form-input" type="date" id="ci-end-date"></div>
+        <div class="form-group" style="grid-column:1/-1;"><div class="form-label">入住原因 / 备注</div><textarea class="form-textarea" id="ci-remark" placeholder="说明入住原因或特殊情况（选填）" style="min-height:64px;"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-checkin')">取消</button><button class="btn btn-success" onclick="confirmCheckin()">✓ 确认入住登记</button></div>
+  </div>
+</div>
+
+<!-- 退宿登记弹窗 -->
+<div class="modal-mask" id="modal-checkout">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">退宿登记（手动）</div><button class="modal-close" onclick="closeModal('modal-checkout')">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-info-panel">
+        <div class="modal-info-row"><div class="modal-info-key">所属宿舍</div><div class="modal-info-val" id="co-dorm">—</div></div>
+        <div class="modal-info-row"><div class="modal-info-key">寝室名称</div><div class="modal-info-val" id="co-room">—</div></div>
+        <div class="modal-info-row"><div class="modal-info-key">当前入住人</div><div class="modal-info-val" id="co-person">—</div></div>
+        <div class="modal-info-row"><div class="modal-info-key">入住时间</div><div class="modal-info-val" id="co-checkin-date">—</div></div>
+      </div>
+      <div class="alert alert-warning" style="margin-bottom:16px;"><span>⚠️</span><span>确认后寝室状态将变更为"待入住"，入住记录更新为"已退宿"，操作不可撤销。</span></div>
+      <div class="form-grid" style="gap:14px;">
+        <div class="form-group"><div class="form-label req">实际退宿日期</div><input class="form-input" type="date" id="co-date"></div>
+        <div class="form-group" style="grid-column:1/-1;"><div class="form-label">房间检查情况 / 备注</div><textarea class="form-textarea" id="co-remark" placeholder="如：房间整洁，无损坏（选填）" style="min-height:64px;"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modal-checkout')">取消</button><button class="btn btn-danger" onclick="confirmCheckout()">✓ 确认退宿登记</button></div>
+  </div>
+</div>
+
+<!-- 编辑宿舍基本信息 -->
+<div class="modal-mask" id="modal-dorm-basic">
+  <div class="modal modal-lg">
+    <div class="modal-header"><div class="modal-title">编辑基本信息</div><button type="button" class="modal-close" onclick="closeModal('modal-dorm-basic')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid" style="gap:14px;">
+        <div class="form-group"><div class="form-label req">宿舍名称</div><input type="text" class="form-input" id="db-name" placeholder="宿舍名称"></div>
+        <div class="form-group"><div class="form-label req">所属区域</div><select class="form-select" id="db-region"><option value="朝阳及望京业务区">朝阳及望京业务区</option><option value="海淀业务区">海淀业务区</option><option value="东城业务区">东城业务区</option><option value="浦东张江业务区">浦东张江业务区</option></select></div>
+        <div class="form-group" style="grid-column:1/-1;"><div class="form-label req">详细地址</div><input type="text" class="form-input" id="db-address" placeholder="详细地址"></div>
+        <div class="form-group"><div class="form-label">户型</div><input type="text" class="form-input" id="db-layout" placeholder="如：多室合租"></div>
+        <div class="form-group"><div class="form-label">面积（m²）</div><input type="number" class="form-input" id="db-area" min="0" step="0.1" placeholder="120"></div>
+        <div class="form-group"><div class="form-label req">租金（元/月）</div><input type="number" class="form-input" id="db-rent" min="0" step="1" placeholder="15000"></div>
+        <div class="form-group"><div class="form-label">押金（元）</div><input type="number" class="form-input" id="db-deposit" min="0" step="1" placeholder="30000"></div>
+        <div class="form-group"><div class="form-label req">合同开始</div><input type="date" class="form-input" id="db-contract-start"></div>
+        <div class="form-group"><div class="form-label req">合同结束</div><input type="date" class="form-input" id="db-contract-end"></div>
+        <div class="form-group"><div class="form-label req">付款方式</div><select class="form-select" id="db-payment"><option value="月付">月付</option><option value="季付">季付</option><option value="半年付">半年付</option><option value="年付">年付</option></select></div>
+        <div class="form-group"><div class="form-label">宽带费（元/年）</div><input type="number" class="form-input" id="db-broadband-fee" min="0" step="1" placeholder="1200"></div>
+        <div class="form-group"><div class="form-label">宽带到期日</div><input type="date" class="form-input" id="db-broadband-expiry"></div>
+        <div class="form-group"><div class="form-label">物业费（元/月）</div><input type="number" class="form-input" id="db-property-fee" min="0" step="1" placeholder="800"></div>
+        <div class="form-group"><div class="form-label">电费账号</div><input type="text" class="form-input" id="db-electric" placeholder="电费缴纳账号"></div>
+        <div class="form-group"><div class="form-label">水费账号</div><input type="text" class="form-input" id="db-water" placeholder="水费缴纳账号"></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('modal-dorm-basic')">取消</button><button type="button" class="btn btn-primary" onclick="saveDormBasic()">保存</button></div>
+  </div>
+</div>
+
+<!-- 编辑密码与房东 -->
+<div class="modal-mask" id="modal-dorm-access">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">编辑密码与房东信息</div><button type="button" class="modal-close" onclick="closeModal('modal-dorm-access')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid" style="gap:14px;">
+        <div class="form-group"><div class="form-label">WIFI 名称</div><input type="text" class="form-input" id="dac-wifi-name" placeholder="WIFI 名称"></div>
+        <div class="form-group"><div class="form-label">WIFI 密码</div><input type="text" class="form-input" id="dac-wifi-pwd" placeholder="WIFI 密码" autocomplete="off"></div>
+        <div class="form-group"><div class="form-label">门禁密码</div><input type="text" class="form-input" id="dac-door-pwd" placeholder="门禁密码" autocomplete="off"></div>
+        <div class="form-group"><div class="form-label">房东姓名</div><input type="text" class="form-input" id="dac-landlord-name" placeholder="房东姓名"></div>
+        <div class="form-group"><div class="form-label">联系方式</div><input type="text" class="form-input" id="dac-landlord-phone" placeholder="手机号"></div>
+        <div class="form-group" style="grid-column:1/-1;"><div class="form-label">账户信息</div><input type="text" class="form-input" id="dac-landlord-account" placeholder="银行卡号或收款账号"></div>
+      </div>
+      <p class="form-hint" style="margin-top:12px;">保存后详情页仍通过「查看」按钮显示脱敏内容；明文保存在 data-plain 中供演示切换。</p>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('modal-dorm-access')">取消</button><button type="button" class="btn btn-primary" onclick="saveDormAccess()">保存</button></div>
+  </div>
+</div>
+
+<!-- 新增 / 编辑寝室 -->
+<div class="modal-mask" id="modal-room">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="room-modal-title">新增寝室</div><button type="button" class="modal-close" onclick="closeModal('modal-room')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid" style="gap:14px;">
+        <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-label req">所属宿舍</div>
+          <select class="form-input form-select" id="rm-dorm" disabled style="opacity:1;background:var(--gray-50);color:var(--gray-600);cursor:not-allowed;">
+            <option>朝阳东路公寓</option>
+          </select>
+        </div>
+        <div class="form-group"><div class="form-label req">寝室名称</div><input type="text" class="form-input" id="rm-name" placeholder="如：A室、101室（同宿舍内唯一）"></div>
+        <div class="form-group"><div class="form-label req">寝室面积（m²）</div><input type="number" class="form-input" id="rm-area" min="0" step="0.1" placeholder="25"></div>
+        <div class="form-group" id="rm-status-wrap" style="grid-column:1/-1;display:none;">
+          <div class="form-label">寝室状态</div>
+          <select class="form-select" id="rm-status">
+            <option value="available">待入住</option>
+            <option value="occupied">已入住</option>
+            <option value="disabled">已停用</option>
+          </select>
+          <div class="form-hint">演示：修改「已入住」状态不会自动同步入住人列，实际系统由入住/退宿流水驱动。</div>
+        </div>
+      </div>
+      <div class="alert alert-info" id="rm-new-hint" style="margin-top:12px;"><span>ℹ️</span><span>新建寝室默认状态为「待入住」。</span></div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" onclick="closeModal('modal-room')">取消</button><button type="button" class="btn btn-primary" onclick="confirmRoomSave()">保存</button></div>
+  </div>
+</div>
+
+<script>
+const titles = {
+  dashboard: '数据概览',
+  'checkin-apply': '申请列表',
+  'checkin-detail': '审批处理',
+  'checkout-detail': '审批退宿',
+  regions: '区域管理',
+  'region-new': '新增区域',
+  dormitories: '宿舍管理',
+  'dormitory-detail': '宿舍详情',
+  'dormitory-new': '新增宿舍',
+  admins: '权限管理',
+};
+const navMap = {
+  dashboard: 'dashboard',
+  'checkin-apply': 'checkin-apply',
+  'checkin-detail': 'checkin-apply',
+  'checkout-detail': 'checkin-apply',
+  regions: 'regions',
+  'region-new': 'regions',
+  dormitories: 'dormitories',
+  'dormitory-detail': 'dormitories',
+  'dormitory-new': 'dormitories',
+  admins: 'admins',
+};
+
+/* ── Mobile nav ── */
+function toggleMobileNav() {
+  const overlay = document.getElementById('mobile-nav-overlay');
+  const isOpen = overlay.style.display !== 'none' && overlay.style.display !== '';
+  overlay.style.display = isOpen ? 'none' : 'block';
+}
+function closeMobileNav() {
+  document.getElementById('mobile-nav-overlay').style.display = 'none';
+}
+
+/* ── More menu ── */
+function toggleMoreMenu() {
+  const panel = document.getElementById('more-menu-panel');
+  const mask = document.getElementById('more-menu-mask');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  mask.classList.toggle('open', !isOpen);
+}
+function closeMoreMenu() {
+  document.getElementById('more-menu-panel').style.display = 'none';
+  document.getElementById('more-menu-mask').classList.remove('open');
+}
+
+/* ── Main nav ── */
+function nav(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('active');
+
+  /* Update PC header nav */
+  document.querySelectorAll('#header-nav .nav-link').forEach(el => {
+    el.classList.remove('active');
+    const oc = el.getAttribute('onclick');
+    if (oc && oc.includes("'" + navMap[name] + "'")) el.classList.add('active');
+  });
+
+  /* Update mobile overlay nav */
+  document.querySelectorAll('.mobile-nav-link').forEach(el => {
+    el.classList.remove('active');
+    const oc = el.getAttribute('onclick');
+    if (oc && oc.includes(navMap[name])) el.classList.add('active');
+  });
+
+  /* Update mobile bottom nav */
+  document.querySelectorAll('.m-nav-item').forEach(el => el.classList.remove('active'));
+  const mNavTarget = navMap[name];
+  const mNavItem = document.getElementById('mnav-m-' + mNavTarget);
+  if (mNavItem) {
+    mNavItem.classList.add('active');
+  } else {
+    // secondary pages: highlight "more"
+    const morePages = ['admins'];
+    if (morePages.includes(mNavTarget)) {
+      const moreItem = document.getElementById('mnav-m-more');
+      if (moreItem) moreItem.classList.add('active');
+    }
+  }
+
+  document.getElementById('content-area').scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+/* ── Tabs ── */
+function switchTab(page, status, el) {
+  ['pending', 'approved', 'rejected'].forEach(s => {
+    const p = document.getElementById(page + '-' + s);
+    if (p) p.style.display = (s === status) ? '' : 'none';
+  });
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ── Admin Modal ── */
+function openAddAdminModal() {
+  clearAdminPerson();
+  document.getElementById('aa-role').value = 'admin';
+  document.getElementById('modal-add-admin').classList.add('open');
+}
+function selectAdminPerson() {
+  const names = ['赵建华', '钱晓红', '孙伟', '周丽', '吴刚', '郑晓明'];
+  const picked = names[Math.floor(Math.random() * names.length)];
+  document.getElementById('aa-person-name').textContent = picked;
+  document.getElementById('aa-person-tag').style.display = '';
+  document.getElementById('aa-person-placeholder').style.display = 'none';
+}
+function clearAdminPerson(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('aa-person-tag').style.display = 'none';
+  document.getElementById('aa-person-placeholder').style.display = '';
+}
+function confirmAddAdmin() {
+  const tagVisible = document.getElementById('aa-person-tag').style.display !== 'none';
+  if (!tagVisible) { alert('请选择员工'); return; }
+  const name = document.getElementById('aa-person-name').textContent;
+  closeModal('modal-add-admin');
+  alert(`✅ 已成功添加管理员：${name}`);
+}
+function openEditAdminModal(name, dept, empid) {
+  document.getElementById('ea-name').textContent = name;
+  document.getElementById('ea-dept').textContent = dept;
+  document.getElementById('ea-empid').textContent = empid;
+  document.getElementById('ea-all').checked = false;
+  document.querySelectorAll('.ea-dorm').forEach(cb => { cb.disabled = false; });
+  document.getElementById('modal-edit-admin').classList.add('open');
+}
+function toggleEaAll(cb) {
+  document.querySelectorAll('.ea-dorm').forEach(d => { d.disabled = cb.checked; d.checked = false; });
+}
+function confirmEditAdmin() {
+  const name = document.getElementById('ea-name').textContent;
+  closeModal('modal-edit-admin');
+  alert(`✅ 已保存 ${name} 的权限配置`);
+}
+function openDelAdminModal(name, dept, role) {
+  document.getElementById('da-name').textContent = name;
+  document.getElementById('da-dept').textContent = dept;
+  document.getElementById('da-role').textContent = role;
+  document.getElementById('modal-del-admin').classList.add('open');
+}
+function confirmDelAdmin() {
+  const name = document.getElementById('da-name').textContent;
+  closeModal('modal-del-admin');
+  alert(`✅ 已删除管理员：${name}`);
+}
+
+/* ── Checkin / Checkout Modal ── */
+function openCheckinModal(roomName, dormName) {
+  document.getElementById('ci-dorm').textContent = dormName;
+  document.getElementById('ci-room').textContent = roomName;
+  document.getElementById('ci-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('ci-end-date').value = '';
+  document.getElementById('ci-remark').value = '';
+  clearPerson();
+  document.getElementById('modal-checkin').classList.add('open');
+}
+function openCheckoutModal(roomName, dormName, personName, checkinDate) {
+  document.getElementById('co-dorm').textContent = dormName;
+  document.getElementById('co-room').textContent = roomName;
+  document.getElementById('co-person').textContent = personName;
+  document.getElementById('co-checkin-date').textContent = checkinDate;
+  document.getElementById('co-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('co-remark').value = '';
+  document.getElementById('modal-checkout').classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function selectPerson() {
+  const names = ['张伟', '李娜', '王刚', '刘洋', '陈磊', '赵晓燕'];
+  const picked = names[Math.floor(Math.random() * names.length)];
+  document.getElementById('ci-person-name').textContent = picked;
+  document.getElementById('ci-person-tag').style.display = '';
+  document.getElementById('ci-person-placeholder').style.display = 'none';
+}
+function clearPerson(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('ci-person-tag').style.display = 'none';
+  document.getElementById('ci-person-placeholder').style.display = '';
+}
+function confirmCheckin() {
+  const person = document.getElementById('ci-person-name').textContent;
+  const tagVisible = document.getElementById('ci-person-tag').style.display !== 'none';
+  const date = document.getElementById('ci-date').value;
+  if (!tagVisible) { alert('请选择入住员工'); return; }
+  if (!date) { alert('请填写入住日期'); return; }
+  closeModal('modal-checkin');
+  alert(`✅ 入住登记成功！\n员工：${person}\n入住日期：${date}`);
+}
+function confirmCheckout() {
+  const date = document.getElementById('co-date').value;
+  if (!date) { alert('请填写实际退宿日期'); return; }
+  closeModal('modal-checkout');
+  alert(`✅ 退宿登记成功！\n实际退宿日期：${date}`);
+}
+
+/* ── 宿舍详情：解析与格式化 ── */
+function parseMoneyFromText(s) {
+  if (!s) return '';
+  const t = String(s).replace(/[^\d,]/g, '').replace(/,/g, '');
+  return t ? parseInt(t, 10) : '';
+}
+function formatMoneyYuan(n) {
+  if (n === '' || n === null || isNaN(n)) return '—';
+  return '¥ ' + Number(n).toLocaleString('zh-CN');
+}
+function openDormBasicModal() {
+  document.getElementById('db-name').value = document.getElementById('detail-dorm-name').textContent.trim();
+  var reg = document.getElementById('detail-region').textContent.trim();
+  var sel = document.getElementById('db-region');
+  for (var i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === reg) { sel.selectedIndex = i; break; }
+  }
+  document.getElementById('db-address').value = document.getElementById('detail-address').textContent.trim();
+  var layout = document.getElementById('detail-layout').textContent.trim();
+  document.getElementById('db-layout').value = layout === '—' ? '' : layout;
+  var areaTxt = document.getElementById('detail-area').textContent.replace(/[^\d.]/g, '');
+  document.getElementById('db-area').value = areaTxt || '';
+  document.getElementById('db-rent').value = parseMoneyFromText(document.getElementById('detail-rent').textContent);
+  document.getElementById('db-deposit').value = parseMoneyFromText(document.getElementById('detail-deposit').textContent);
+  document.getElementById('db-contract-start').value = document.getElementById('detail-contract-start').textContent.trim();
+  document.getElementById('db-contract-end').value = document.getElementById('detail-contract-end').textContent.trim();
+  var pay = document.getElementById('detail-payment').textContent.trim();
+  var paySel = document.getElementById('db-payment');
+  for (var j = 0; j < paySel.options.length; j++) {
+    if (paySel.options[j].value === pay) { paySel.selectedIndex = j; break; }
+  }
+  document.getElementById('db-broadband-fee').value = parseMoneyFromText(document.getElementById('detail-broadband-fee').textContent);
+  document.getElementById('db-broadband-expiry').value = document.getElementById('detail-broadband-expiry').textContent.trim();
+  document.getElementById('db-property-fee').value = parseMoneyFromText(document.getElementById('detail-property-fee').textContent);
+  document.getElementById('db-electric').value = document.getElementById('detail-electric-account').textContent.trim();
+  document.getElementById('db-water').value = document.getElementById('detail-water-account').textContent.trim();
+  document.getElementById('modal-dorm-basic').classList.add('open');
+}
+function saveDormBasic() {
+  var name = document.getElementById('db-name').value.trim();
+  if (!name) { alert('请填写宿舍名称'); return; }
+  if (!document.getElementById('db-address').value.trim()) { alert('请填写详细地址'); return; }
+  if (!document.getElementById('db-rent').value) { alert('请填写租金'); return; }
+  if (!document.getElementById('db-contract-start').value || !document.getElementById('db-contract-end').value) { alert('请填写合同起止日期'); return; }
+  document.getElementById('detail-dorm-name').textContent = name;
+  document.getElementById('breadcrumb-dorm-name').textContent = name;
+  var regVal = document.getElementById('db-region').value;
+  document.getElementById('detail-region').textContent = regVal;
+  document.getElementById('detail-address').textContent = document.getElementById('db-address').value.trim();
+  var layoutVal = document.getElementById('db-layout').value.trim();
+  document.getElementById('detail-layout').textContent = layoutVal || '—';
+  var areaNum = document.getElementById('db-area').value;
+  document.getElementById('detail-area').textContent = areaNum ? (areaNum + ' m²') : '—';
+  var rentNum = document.getElementById('db-rent').value;
+  document.getElementById('detail-rent').textContent = formatMoneyYuan(rentNum) + ' / 月';
+  var depNum = document.getElementById('db-deposit').value;
+  document.getElementById('detail-deposit').textContent = depNum ? formatMoneyYuan(depNum) : '—';
+  document.getElementById('detail-contract-start').textContent = document.getElementById('db-contract-start').value;
+  var endEl = document.getElementById('detail-contract-end');
+  endEl.textContent = document.getElementById('db-contract-end').value;
+  endEl.style.color = '#D97706';
+  document.getElementById('detail-payment').textContent = document.getElementById('db-payment').value;
+  var bb = document.getElementById('db-broadband-fee').value;
+  document.getElementById('detail-broadband-fee').textContent = bb ? (formatMoneyYuan(bb) + ' / 年') : '—';
+  document.getElementById('detail-broadband-expiry').textContent = document.getElementById('db-broadband-expiry').value || '—';
+  var pf = document.getElementById('db-property-fee').value;
+  document.getElementById('detail-property-fee').textContent = pf ? (formatMoneyYuan(pf) + ' / 月') : '—';
+  document.getElementById('detail-electric-account').textContent = document.getElementById('db-electric').value.trim() || '—';
+  document.getElementById('detail-water-account').textContent = document.getElementById('db-water').value.trim() || '—';
+  closeModal('modal-dorm-basic');
+  alert('✅ 基本信息已保存（演示）');
+}
+function openDormAccessModal() {
+  document.getElementById('dac-wifi-name').value = document.getElementById('detail-wifi-name').textContent.trim();
+  var wifiPwd = document.getElementById('detail-wifi-password');
+  document.getElementById('dac-wifi-pwd').value = wifiPwd.getAttribute('data-plain') || '';
+  var doorPwd = document.getElementById('detail-door-password');
+  document.getElementById('dac-door-pwd').value = doorPwd.getAttribute('data-plain') || '';
+  document.getElementById('dac-landlord-name').value = document.getElementById('detail-landlord-name').textContent.trim();
+  document.getElementById('dac-landlord-phone').value = document.getElementById('detail-landlord-phone').textContent.trim();
+  document.getElementById('dac-landlord-account').value = document.getElementById('detail-landlord-account').textContent.trim();
+  document.getElementById('modal-dorm-access').classList.add('open');
+}
+function toggleSecret(spanId, btnId) {
+  var span = document.getElementById(spanId);
+  var btn = document.getElementById(btnId);
+  if (!span || !btn) return;
+  var plain = span.getAttribute('data-plain') || '';
+  if (!plain) return;
+  if (span.dataset.visible === '1') {
+    if (spanId === 'detail-door-password') {
+      span.textContent = '•'.repeat(Math.min(8, Math.max(4, plain.length)));
+    } else {
+      span.textContent = '•'.repeat(Math.min(12, Math.max(6, plain.length)));
+    }
+    span.dataset.visible = '';
+    btn.textContent = '👁 查看';
+  } else {
+    span.textContent = plain;
+    span.dataset.visible = '1';
+    btn.textContent = '隐藏';
+  }
+}
+function saveDormAccess() {
+  document.getElementById('detail-wifi-name').textContent = document.getElementById('dac-wifi-name').value.trim() || '—';
+  var w = document.getElementById('dac-wifi-pwd').value;
+  var wifiSpan = document.getElementById('detail-wifi-password');
+  wifiSpan.setAttribute('data-plain', w);
+  wifiSpan.textContent = w ? '•'.repeat(Math.min(12, Math.max(6, w.length))) : '—';
+  wifiSpan.dataset.visible = '';
+  var wbtn = document.getElementById('detail-wifi-password-btn');
+  if (wbtn) wbtn.textContent = '👁 查看';
+  var d = document.getElementById('dac-door-pwd').value;
+  var doorSpan = document.getElementById('detail-door-password');
+  doorSpan.setAttribute('data-plain', d);
+  doorSpan.textContent = d ? '•'.repeat(Math.min(8, Math.max(4, d.length))) : '—';
+  doorSpan.dataset.visible = '';
+  var dbtn = document.getElementById('detail-door-password-btn');
+  if (dbtn) dbtn.textContent = '👁 查看';
+  document.getElementById('detail-landlord-name').textContent = document.getElementById('dac-landlord-name').value.trim() || '—';
+  document.getElementById('detail-landlord-phone').textContent = document.getElementById('dac-landlord-phone').value.trim() || '—';
+  document.getElementById('detail-landlord-account').textContent = document.getElementById('dac-landlord-account').value.trim() || '—';
+  closeModal('modal-dorm-access');
+  alert('✅ 密码与房东信息已保存（演示）');
+}
+
+/* ── 寝室：新增 / 编辑弹窗 ── */
+function roomStatusBadgeHtml(value) {
+  if (value === 'occupied') return '<span class="badge badge-occupied">已入住</span>';
+  if (value === 'disabled') return '<span class="badge badge-disabled">已停用</span>';
+  return '<span class="badge badge-available">待入住</span>';
+}
+function openRoomModal(mode, roomName) {
+  var modal = document.getElementById('modal-room');
+  var titleEl = document.getElementById('room-modal-title');
+  var hintEl = document.getElementById('rm-new-hint');
+  var statusWrap = document.getElementById('rm-status-wrap');
+  document.getElementById('rm-dorm').selectedIndex = 0;
+  if (mode === 'new') {
+    titleEl.textContent = '新增寝室';
+    modal.dataset.mode = 'new';
+    delete modal.dataset.editRoomName;
+    document.getElementById('rm-name').value = '';
+    document.getElementById('rm-name').readOnly = false;
+    document.getElementById('rm-area').value = '';
+    statusWrap.style.display = 'none';
+    hintEl.style.display = '';
+  } else {
+    titleEl.textContent = '编辑寝室';
+    modal.dataset.mode = 'edit';
+    modal.dataset.editRoomName = roomName;
+    var row = document.querySelector('#page-dormitory-detail tr[data-room-name="' + roomName + '"]');
+    if (!row) { alert('未找到该寝室'); return; }
+    document.getElementById('rm-name').value = roomName;
+    document.getElementById('rm-name').readOnly = true;
+    var areaCell = row.querySelector('.room-cell-area');
+    var areaNum = areaCell ? areaCell.textContent.replace(/[^\d.]/g, '') : '';
+    document.getElementById('rm-area').value = areaNum || '';
+    var badge = row.querySelector('.room-cell-status .badge');
+    var st = document.getElementById('rm-status');
+    if (badge && badge.classList.contains('badge-occupied')) st.value = 'occupied';
+    else if (badge && badge.classList.contains('badge-disabled')) st.value = 'disabled';
+    else st.value = 'available';
+    statusWrap.style.display = '';
+    hintEl.style.display = 'none';
+  }
+  modal.classList.add('open');
+}
+function confirmRoomSave() {
+  var modal = document.getElementById('modal-room');
+  var mode = modal.dataset.mode;
+  var name = document.getElementById('rm-name').value.trim();
+  var area = document.getElementById('rm-area').value;
+  if (!name) { alert('请填写寝室名称'); return; }
+  if (!area || Number(area) <= 0) { alert('请填写有效的寝室面积'); return; }
+  var tbody = document.getElementById('dorm-room-table-body');
+  if (mode === 'new') {
+    if (document.querySelector('#page-dormitory-detail tr[data-room-name="' + name + '"]')) {
+      alert('该宿舍下已存在同名寝室'); return;
+    }
+    var tr = document.createElement('tr');
+    tr.setAttribute('data-room-name', name);
+    tr.innerHTML = '<td class="room-cell-name"></td><td class="room-cell-area"></td><td class="room-cell-status"></td><td>—</td><td>—</td><td><div class="btn-group"><button type="button" class="btn btn-primary btn-sm" onclick="openCheckinModal(\'' + name.replace(/'/g, "\\'") + '\',\'朝阳东路公寓\')">入住登记</button><button type="button" class="btn btn-secondary btn-sm" onclick="openRoomModal(\'edit\',\'' + name.replace(/'/g, "\\'") + '\')">编辑</button><button type="button" class="btn btn-warning btn-sm">停用</button><button type="button" class="btn btn-danger btn-sm" onclick="alert(\'演示：已删除寝室 ' + name.replace(/'/g, "\\'") + '\')">删除</button></div></td>';
+    tr.querySelector('.room-cell-name').textContent = name;
+    tr.querySelector('.room-cell-area').textContent = area + ' m²';
+    tr.querySelector('.room-cell-status').innerHTML = roomStatusBadgeHtml('available');
+    tbody.appendChild(tr);
+    closeModal('modal-room');
+    alert('✅ 已新增寝室：' + name + '（演示）');
+    return;
+  }
+  var oldName = modal.dataset.editRoomName;
+  var row = document.querySelector('#page-dormitory-detail tr[data-room-name="' + oldName + '"]');
+  if (!row) { alert('未找到该寝室'); return; }
+  row.setAttribute('data-room-name', name);
+  row.querySelector('.room-cell-name').textContent = name;
+  row.querySelector('.room-cell-area').textContent = area + ' m²';
+  var stVal = document.getElementById('rm-status').value;
+  row.querySelector('.room-cell-status').innerHTML = roomStatusBadgeHtml(stVal);
+  closeModal('modal-room');
+  alert('✅ 寝室信息已更新（演示）');
+}
+
+/* Click mask to close modals */
+document.addEventListener('click', function(e) {
+  ['modal-checkin','modal-checkout','modal-add-admin','modal-edit-admin','modal-del-admin','modal-dorm-basic','modal-dorm-access','modal-room'].forEach(id => {
+    const mask = document.getElementById(id);
+    if (mask && e.target === mask) mask.classList.remove('open');
+  });
+});
+
+/* 新增宿舍：选择所属区域后，地址中的省、市默认带出（仍可手动修改） */
+(function () {
+  var REGION_ADDRESS_DEFAULTS = {
+    '朝阳及望京业务区': { province: '北京市', city: '北京市' },
+    '海淀业务区': { province: '北京市', city: '北京市' },
+    '东城业务区': { province: '北京市', city: '北京市' },
+    '浦东张江业务区': { province: '上海市', city: '上海市' }
+  };
+  function setSelectByLabel(select, label) {
+    if (!select || !label) return;
+    for (var i = 0; i < select.options.length; i++) {
+      var o = select.options[i];
+      if (o.value === label || o.textContent === label) { select.selectedIndex = i; return; }
+    }
+  }
+  function onRegionChange() {
+    var regEl = document.getElementById('dorm-new-region');
+    var provEl = document.getElementById('dorm-new-province');
+    var cityEl = document.getElementById('dorm-new-city');
+    if (!regEl || !provEl || !cityEl) return;
+    var d = REGION_ADDRESS_DEFAULTS[regEl.value];
+    if (!d) return;
+    setSelectByLabel(provEl, d.province);
+    setSelectByLabel(cityEl, d.city);
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    var regEl = document.getElementById('dorm-new-region');
+    if (regEl) regEl.addEventListener('change', onRegionChange);
+  });
+})();
+</script>
+</body>
+</html>
+
+
+
+
